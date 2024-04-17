@@ -15,7 +15,7 @@ public class EtudiantMapperImpl implements IEtudiantMapper {
                 .code(etudiantDTO.code())
                 .nomComplet(etudiantDTO.nomComplet())
                 .dateNaissance(etudiantDTO.dateNaissance())
-                .image(etudiantDTO.image())
+                .photo(etudiantDTO.photo())
                 .build();
     }
 
@@ -26,7 +26,7 @@ public class EtudiantMapperImpl implements IEtudiantMapper {
                 .code(etudiant.getCode())
                 .nomComplet(etudiant.getNomComplet())
                 .dateNaissance(etudiant.getDateNaissance())
-                .image(etudiant.getImage())
+                .photo(etudiant.getPhoto())
                 .build();
     }
 }

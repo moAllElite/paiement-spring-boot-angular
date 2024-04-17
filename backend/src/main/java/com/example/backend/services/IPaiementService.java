@@ -1,11 +1,15 @@
 package com.example.backend.services;
 
+import com.example.backend.dto.PaiementDTO;
 import com.example.backend.entities.EtatDePaiement;
-import com.example.backend.entities.Paiement;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
-public interface IPaiementService extends AbstractService<Paiement> {
-    List<Paiement> getAllPaiementByStudentCode(String code);
-    List<Paiement> getAllPaiementByEtat(EtatDePaiement etatDePaiement);
+public interface IPaiementService extends AbstractService<PaiementDTO> {
+    List<PaiementDTO> getAllPaiementByStudentCode(String code);
+    List<PaiementDTO> getAllPaiementByEtat(EtatDePaiement etatDePaiement);
+
+    PaiementDTO  save(MultipartFile recu, PaiementDTO paiementDTO) throws IOException;
 }

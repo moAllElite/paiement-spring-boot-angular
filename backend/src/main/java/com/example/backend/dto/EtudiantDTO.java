@@ -9,6 +9,6 @@ public record EtudiantDTO(
          String code,
          String nomComplet,
          Date dateNaissance,
-         String image
+         String photo
 ) {
 }
