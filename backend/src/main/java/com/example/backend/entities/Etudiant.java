@@ -19,7 +19,7 @@ public class Etudiant {
     private String code;
     private String nomComplet;
     private Date dateNaissance;
-    private String image;
+    private String photo;
     @OneToMany(mappedBy = "etudiant")
     private Set<Paiement> paiements;
 

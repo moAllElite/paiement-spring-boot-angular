@@ -3,25 +3,28 @@ package com.example.backend.services.impl;
 import com.example.backend.dto.PaiementDTO;
 import com.example.backend.entities.EtatDePaiement;
 import com.example.backend.entities.Paiement;
+import com.example.backend.entities.TypeDePaiement;
 import com.example.backend.mappers.IPaiementMapper;
 import com.example.backend.repo.PaiementRepository;
 import com.example.backend.services.IPaiementService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-
+@Transactional
 @Service
 @AllArgsConstructor
 public class PaiementServiceImpl implements IPaiementService {
-    private static final String RACINE_DU_FICHIER ="paiement";
+    private static final String SOUS_DOSSIER ="paiement";
     private static final String REPERTOIRE_PARENT="dossier-etudiant-reçus";
     private static final String NOTFOUNDMESSAGE="Aucun paiement n'a été trouvé avec l'id %s";
     private final PaiementRepository paiementRepository;
@@ -34,7 +37,7 @@ public class PaiementServiceImpl implements IPaiementService {
     }
 
     @Override
-    public List<PaiementDTO> getAllPaiementByEtat(EtatDePaiement etatDePaiement) {
+    public List<PaiementDTO> getAllPaiementByStatus(EtatDePaiement etatDePaiement) {
         return paiementRepository.findAllByEtat(etatDePaiement)
                 .stream().map(paiementMapper::toDto)
                 .toList();
@@ -42,24 +45,47 @@ public class PaiementServiceImpl implements IPaiementService {
 
 
     @Override
-    public PaiementDTO save(MultipartFile recu, PaiementDTO paiementDTO) throws IOException {
-        Path path = Paths.get(System.getProperty("user.home"),REPERTOIRE_PARENT, RACINE_DU_FICHIER);
-        /*
-          On vérifie si la répertoire qui
-           doit contrenir les fichiers  de paie existe sinon on le crée
-         */
-        if(Files.exists(path)){
-            Files.createDirectory(path);
+    public PaiementDTO save(
+            MultipartFile recu,
+            LocalDate date,
+            double montant,
+            TypeDePaiement typeDePaiement,
+            String codeEtudiant
+    ) throws IOException {
+        Path path = Paths.get(System.getProperty("user.home"),REPERTOIRE_PARENT, SOUS_DOSSIER);
+
+        if(!Files.exists(path)){
+            Files.createDirectories(path);
         }
         String fileId = UUID.randomUUID().toString();
         Path filePath = Paths.get(
                 System.getProperty("user.home"), REPERTOIRE_PARENT,//chemin du repértoire
-                RACINE_DU_FICHIER+fileId+".pdf"
+                SOUS_DOSSIER +fileId+".pdf"
         );
-       Files.copy(recu.getInputStream(),filePath);
-       Paiement paiement = paiementMapper.toEntity(paiementDTO);
-       paiement.setRecu(filePath.toUri().toString());
+        Files.copy(recu.getInputStream(),filePath);
+        PaiementDTO nouveauPaiementDTO= PaiementDTO.builder()
+                .codeEtudiant(codeEtudiant)
+                .type(typeDePaiement)
+                .montant(montant)
+                .date(date)
+                .etat(EtatDePaiement.CREE)
+                .recu(filePath.toUri().toString())
+                .build();
+
+        Paiement paiement = paiementMapper.toEntity(nouveauPaiementDTO);
+
         return  paiementMapper.toDto(paiementRepository.save(paiement));
+    }
+
+    @Override
+    public byte[] getPaiementFileById(Long paiementId) throws IOException {
+        PaiementDTO paiementDTO = paiementMapper.toDto(
+                paiementRepository.findById(paiementId)
+                        .orElseThrow(()-> new EntityNotFoundException(String.format(NOTFOUNDMESSAGE, paiementId)))
+        );
+        String filePath = paiementDTO.recu();
+        return Files.readAllBytes(Path.of(URI.create(filePath))); // type of byte[]
+
     }
 
     @Override
@@ -68,12 +94,7 @@ public class PaiementServiceImpl implements IPaiementService {
                 .map(paiementMapper::toDto)
                 .orElseThrow(
                         ()-> new EntityNotFoundException(String.format(NOTFOUNDMESSAGE, id )
-                ));
-    }
-
-    @Override
-    public List<PaiementDTO> findAll() {
-        return List.of();
+                        ));
     }
 
     @Override
@@ -85,15 +106,22 @@ public class PaiementServiceImpl implements IPaiementService {
     }
 
     @Override
-    public PaiementDTO update(Long id, PaiementDTO paiementDTO) {
-        if (!paiementRepository.existsById(id)) {
-            throw  new EntityNotFoundException(String.format(NOTFOUNDMESSAGE,id));
-        }
-        Paiement entity = paiementMapper.toEntity(paiementDTO);
-        entity.setId(id);
-        paiementRepository.save(entity);
+    public List<PaiementDTO> findAll() {
+        return paiementRepository.findAll()
+                .stream().map(paiementMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public PaiementDTO update(Long id,EtatDePaiement etatDePaiement) {
+        Paiement paiement = paiementRepository.findById(id).orElseThrow(
+                ()-> new EntityNotFoundException(String.format(NOTFOUNDMESSAGE,id))
+        );
+        paiement.setEtat(etatDePaiement);
+        paiementRepository.save(paiement);
         return paiementMapper.toDto(
-                paiementRepository.save(entity)
+                paiementRepository.save(paiement)
         );
     }
+
 }

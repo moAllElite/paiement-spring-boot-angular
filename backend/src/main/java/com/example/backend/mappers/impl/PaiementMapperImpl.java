@@ -5,13 +5,13 @@ import com.example.backend.entities.Etudiant;
 import com.example.backend.entities.Paiement;
 import com.example.backend.mappers.IPaiementMapper;
 import com.example.backend.repo.EtudiantRepository;
-import com.example.backend.repo.PaiementRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @Component
 public class PaiementMapperImpl implements IPaiementMapper {
+
     private final EtudiantRepository etudiantRepository;
     @Override
     public Paiement toEntity(PaiementDTO paiementDTO) {
@@ -21,8 +21,10 @@ public class PaiementMapperImpl implements IPaiementMapper {
         return Paiement.builder()
                 .id(paiementDTO.id())
                 .date(paiementDTO.date())
+                .type(paiementDTO.type())
                 .etat(paiementDTO.etat())
                 .recu(paiementDTO.recu())
+                .montant(paiementDTO.montant())
                 .etudiant(etudiant)
                 .build();
     }
@@ -33,8 +35,12 @@ public class PaiementMapperImpl implements IPaiementMapper {
                 .id(paiement.getId())
                 .date(paiement.getDate())
                 .etat(paiement.getEtat())
+                .montant(paiement.getMontant())
+                .type(paiement.getType())
                 .codeEtudiant(paiement.getEtudiant().getCode())
                 .recu(paiement.getRecu())
                 .build();
     }
+
+
 }

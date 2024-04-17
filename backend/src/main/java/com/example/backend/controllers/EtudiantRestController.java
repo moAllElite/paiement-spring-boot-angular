@@ -2,18 +2,23 @@ package com.example.backend.controllers;
 
 import com.example.backend.dto.EtudiantDTO;
 import com.example.backend.dto.PaiementDTO;
+import com.example.backend.entities.TypeDePaiement;
 import com.example.backend.services.IEtudiantService;
 import com.example.backend.services.IPaiementService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("etudiant")
+@RequestMapping("etudiants")
 public class EtudiantRestController {
     private final IEtudiantService  etudiantService;
     private final IPaiementService paiementService;
@@ -23,7 +28,7 @@ public class EtudiantRestController {
         etudiantService.save(etudiantDto);
     }
 
-    @GetMapping("/all")
+    @GetMapping("")
     public ResponseEntity<List<EtudiantDTO>> getAll(){
         return ResponseEntity.ok(etudiantService.findAll());
     }
@@ -50,5 +55,8 @@ public class EtudiantRestController {
         return ResponseEntity.ok(paiementService.getAllPaiementByStudentCode(code));
     }
 
-
+    @PostMapping(value = "/paiements", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<PaiementDTO> nouveauPaiement(@RequestParam MultipartFile recu, LocalDate date, double montant, TypeDePaiement typeDePaiement, String codeEtudiant) throws IOException {
+        return ResponseEntity.ok(paiementService.save(recu,  date, montant, typeDePaiement, codeEtudiant));
+    }
 }
