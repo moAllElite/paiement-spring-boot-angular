@@ -1,0 +1,6 @@
+<p>liste-etudiant works!</p>
+
+@for (  etudiant of etudiants$   | async  ; track etudiant){
+    <p>{{etudiant.code}}</p>
+
+}

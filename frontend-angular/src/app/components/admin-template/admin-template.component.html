@@ -1,0 +1,24 @@
+<mat-toolbar  color="primary">
+  <button mat-icon-button>
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span class="spacer"></span>
+  <button mat-button>Home</button>
+  <button mat-button>Profile</button>
+
+  <!-- BUTTON  BURGER  -->
+  <button mat-button [matMenuTriggerFor]="importMenu">
+    <mat-icon iconPositionEnd>arrow_drop_down</mat-icon>
+    Importer
+  </button>
+  <!-- MENU DEROULANT -->
+  <mat-menu #importMenu>
+    <button mat-menu-item>Charger étudiants</button>
+    <button mat-menu-item>Charger paiements </button>
+
+  </mat-menu>
+  <button mat-raised-button color="warn">
+    <mat-icon >login</mat-icon>
+    Login
+  </button>
+</mat-toolbar>
