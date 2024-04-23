@@ -1,11 +1,13 @@
 package com.example.backend.controllers;
 
 import com.example.backend.dto.EtudiantDTO;
+import com.example.backend.dto.EtudiantActionsDTO;
 import com.example.backend.dto.PaiementDTO;
 import com.example.backend.entities.TypeDePaiement;
 import com.example.backend.services.IEtudiantService;
 import com.example.backend.services.IPaiementService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,17 +17,28 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-
+@Slf4j
 @AllArgsConstructor
 @RestController
 @RequestMapping("etudiants")
 public class EtudiantRestController {
     private final IEtudiantService  etudiantService;
     private final IPaiementService paiementService;
-    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void save(@RequestBody EtudiantDTO etudiantDto){
-        etudiantService.save(etudiantDto);
+    @PostMapping(path = "/",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<EtudiantDTO> save(
+            @RequestParam MultipartFile image,
+            String nomComplet,
+            LocalDate dateNaissance
+    ) throws IOException {
+        log.info(image.getContentType());
+
+        return ResponseEntity.ok(  etudiantService.save(image,  nomComplet,dateNaissance) );
+    }
+
+    @PostMapping(path = "/paiements", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<PaiementDTO> nouveauPaiement(@RequestParam MultipartFile recu, LocalDate date, double montant, TypeDePaiement typeDePaiement, String codeEtudiant) throws IOException {
+        return ResponseEntity.ok(paiementService.save(recu,  date, montant, typeDePaiement, codeEtudiant));
     }
 
     @GetMapping("")
@@ -33,8 +46,8 @@ public class EtudiantRestController {
         return ResponseEntity.ok(etudiantService.findAll());
     }
 
-    @GetMapping("/id")
-    public ResponseEntity<EtudiantDTO> getEtudiantById(@RequestParam long id){
+    @GetMapping("/{id}")
+    public ResponseEntity<EtudiantDTO> getEtudiantById(@PathVariable Long id){
         return ResponseEntity.ok(etudiantService.findById(id));
     }
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -44,9 +57,11 @@ public class EtudiantRestController {
     }
 
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody EtudiantDTO etudiantDto){
-         etudiantService.update(id, etudiantDto);
+    @PutMapping(value = "/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> update(@PathVariable Long id,
+                                       @RequestParam MultipartFile photo,
+                                        EtudiantActionsDTO etudiantDto){
+         etudiantService.update(id,photo,etudiantDto);
          return ResponseEntity.noContent().build();
     }
 
@@ -55,8 +70,8 @@ public class EtudiantRestController {
         return ResponseEntity.ok(paiementService.getAllPaiementByStudentCode(code));
     }
 
-    @PostMapping(value = "/paiements", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<PaiementDTO> nouveauPaiement(@RequestParam MultipartFile recu, LocalDate date, double montant, TypeDePaiement typeDePaiement, String codeEtudiant) throws IOException {
-        return ResponseEntity.ok(paiementService.save(recu,  date, montant, typeDePaiement, codeEtudiant));
+    @GetMapping(value = "/{code}/photo",produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getPhoto(@PathVariable String code){
+        return null;
     }
 }

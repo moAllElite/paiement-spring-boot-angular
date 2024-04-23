@@ -6,16 +6,14 @@
   <button mat-button>Home</button>
   <button mat-button>Profile</button>
 
-  <!-- BUTTON  BURGER  -->
+  <!--  DROPDOWN ICON BUTON  -->
   <button mat-button [matMenuTriggerFor]="importMenu">
     <mat-icon iconPositionEnd>arrow_drop_down</mat-icon>
     Importer
   </button>
-  <!-- MENU DEROULANT -->
-  <mat-menu #importMenu>
+  <mat-menu #importMenu> <!--  DROPDOWN MENU -->
     <button mat-menu-item>Charger étudiants</button>
     <button mat-menu-item>Charger paiements </button>
-
   </mat-menu>
   <button mat-raised-button color="warn">
     <mat-icon >login</mat-icon>

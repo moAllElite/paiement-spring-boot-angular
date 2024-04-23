@@ -18,8 +18,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+
 @Transactional
 @Service
 @AllArgsConstructor
@@ -29,6 +29,7 @@ public class PaiementServiceImpl implements IPaiementService {
     private static final String NOTFOUNDMESSAGE="Aucun paiement n'a été trouvé avec l'id %s";
     private final PaiementRepository paiementRepository;
     private final IPaiementMapper paiementMapper;
+
     @Override
     public List<PaiementDTO> getAllPaiementByStudentCode(String code) {
         return paiementRepository.findAllByEtudiantCode(code)
@@ -52,15 +53,28 @@ public class PaiementServiceImpl implements IPaiementService {
             TypeDePaiement typeDePaiement,
             String codeEtudiant
     ) throws IOException {
+
         Path path = Paths.get(System.getProperty("user.home"),REPERTOIRE_PARENT, SOUS_DOSSIER);
 
         if(!Files.exists(path)){
             Files.createDirectories(path);
         }
         String fileId = UUID.randomUUID().toString();
+        String extension = "";
+        List<String> fileProperties = Arrays.stream(Objects.requireNonNull(recu.getContentType()).split("/")).toList();
+        if(fileProperties.contains("pdf")){
+            extension = ".pdf";
+        }else if(fileProperties.contains("txt")){
+            extension = ".txt";
+        }else if(fileProperties.contains("csv")){
+            extension = ".csv";
+        }
+
+
         Path filePath = Paths.get(
-                System.getProperty("user.home"), REPERTOIRE_PARENT,//chemin du repértoire
-                SOUS_DOSSIER +fileId+".pdf"
+                System.getProperty("user.home"),
+                REPERTOIRE_PARENT,SOUS_DOSSIER ,//chemin du repértoire
+                SOUS_DOSSIER +fileId+extension
         );
         Files.copy(recu.getInputStream(),filePath);
         PaiementDTO nouveauPaiementDTO= PaiementDTO.builder()

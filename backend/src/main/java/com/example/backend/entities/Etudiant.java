@@ -3,6 +3,7 @@ package com.example.backend.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
 
@@ -18,7 +19,7 @@ public class Etudiant {
     @Column(unique = true)
     private String code;
     private String nomComplet;
-    private Date dateNaissance;
+    private LocalDate dateNaissance;
     private String photo;
     @OneToMany(mappedBy = "etudiant")
     private Set<Paiement> paiements;
