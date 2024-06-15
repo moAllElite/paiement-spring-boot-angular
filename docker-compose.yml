@@ -7,7 +7,7 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
-      - "9050:8080"
+      - "8080:8080"
     command:
       - "start-dev"
   mysql-etudiant-db:

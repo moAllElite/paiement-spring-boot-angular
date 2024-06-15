@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {EtudiantService} from "../../services/etudiant.service";
-import {Observable} from "rxjs";
+import {map, Observable} from "rxjs";
 import {Etudiant} from "../../models/etudiant.model";
 import { v4 as uuid } from 'uuid';
 import {MatTableDataSource} from "@angular/material/table";
@@ -21,7 +21,7 @@ export class StudentsComponent implements OnInit, AfterViewInit{
     'nomComplet', 'photo',
     'dateNaissance','payements'
   ];
-   value !:string;
+  value !:string;
   @ViewChild(MatPaginator) paginator!:MatPaginator;
 
   @ViewChild(MatSort)sort!:MatSort;
@@ -32,18 +32,25 @@ export class StudentsComponent implements OnInit, AfterViewInit{
 
 
   ngOnInit(): void {
-      // this.etudiants$ = this.etudiantService.recupererListeEtudiants();
-    this.etudiants=[];
-    for (let  i = 1 ; i < 100; i++ ){
-      this.etudiants.push(
-        {
-          id: i,
-          code: Math.random().toString(20),
-          nomComplet: Math.random().toString(20),
-          photo:"img.jpg",
-          dateNaissance:new  Date()
-        });
-    }
+   // this.etudiants=[];
+    this.etudiants$= this.etudiantService.recupererListeEtudiants()
+    this.etudiants$.subscribe(
+      (val)=> {
+        console.log(val)
+      }
+    );
+
+
+    /* for (let  i = 1 ; i < 100; i++ ){
+       this.etudiants.push(
+         {
+           id: i,
+           code: Math.random().toString(20),
+           nomComplet: Math.random().toString(20),
+           photo:"img.jpg",
+           dateNaissance:new  Date()
+         });
+     }*/
 
     this.dataSource = new MatTableDataSource(this.etudiants);
   }
@@ -58,7 +65,7 @@ export class StudentsComponent implements OnInit, AfterViewInit{
    * @param event
    */
   filtrerParEtudiant(event: Event) {
-  this.value = (event.target as HTMLInputElement).value;
+    this.value = (event.target as HTMLInputElement).value;
     this.dataSource.filter = this.value;
   }
 

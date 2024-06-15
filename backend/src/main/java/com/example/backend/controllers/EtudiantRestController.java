@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +25,8 @@ import java.util.List;
 public class EtudiantRestController {
     private final IEtudiantService  etudiantService;
     private final IPaiementService paiementService;
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(path = "/",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<EtudiantDTO> save(
@@ -35,13 +38,14 @@ public class EtudiantRestController {
 
         return ResponseEntity.ok(  etudiantService.save(image,  nomComplet,dateNaissance) );
     }
-
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     @PostMapping(path = "/paiements", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PaiementDTO> nouveauPaiement(@RequestParam MultipartFile recu, LocalDate date, double montant, TypeDePaiement typeDePaiement, String codeEtudiant) throws IOException {
         return ResponseEntity.ok(paiementService.save(recu,  date, montant, typeDePaiement, codeEtudiant));
     }
 
-    @GetMapping("")
+  //  @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @GetMapping
     public ResponseEntity<List<EtudiantDTO>> getAll(){
         return ResponseEntity.ok(etudiantService.findAll());
     }

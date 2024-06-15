@@ -20,7 +20,7 @@ import {KeycloakService} from "keycloak-angular";
 import { StudentsComponent } from './components/students/students.component';
 import { LoadPayementsComponent } from './components/load-payements/load-payements.component';
 import { MatTableModule} from "@angular/material/table";
-import {provideHttpClient} from "@angular/common/http";
+import {provideHttpClient, withFetch} from "@angular/common/http";
 import { MatPaginatorModule} from "@angular/material/paginator";
 import {MatSortModule} from "@angular/material/sort";
 import { MatInput} from "@angular/material/input";
@@ -30,7 +30,7 @@ function initializeKeycloak(keycloak: KeycloakService) {
   return () =>
     keycloak.init({
       config: {
-        url: 'http://localhost:9050',
+        url: 'http://localhost:8080',
         realm: 'scolarite-realm',
         clientId: 'scolarite-app',
       },
@@ -38,7 +38,8 @@ function initializeKeycloak(keycloak: KeycloakService) {
         onLoad: 'check-sso',
         silentCheckSsoRedirectUri:
           window.location.origin + '/assets/silent-check-sso.html'
-      }
+      }, bearerPrefix: 'Bearer',
+      bearerExcludedUrls: []
     });
 }
 @NgModule({
@@ -73,6 +74,9 @@ function initializeKeycloak(keycloak: KeycloakService) {
   ],
   providers: [
     provideAnimationsAsync(),
+    provideHttpClient(
+      withFetch(),
+    ),
     {
       provide: APP_INITIALIZER,
       useFactory: initializeKeycloak,
@@ -80,7 +84,7 @@ function initializeKeycloak(keycloak: KeycloakService) {
       deps: [KeycloakService]
     },
     KeycloakService,
-    provideHttpClient(),
+
   ],
   bootstrap: [AppComponent]
 })

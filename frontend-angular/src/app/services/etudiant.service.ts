@@ -9,12 +9,10 @@ import {EtatDePaiement, Paiement} from "../models/paiement.interface";
 })
 export class EtudiantService {
   Host:string='http://localhost:8090'
-  constructor(private readonly  http: HttpClient) {}
+  constructor(protected   http: HttpClient) {}
 
   recupererListeEtudiants() :Observable<Etudiant[]> {
-    return this.http.get<Etudiant[]>(
-      `${this.Host}/etudiants?page=0&size=6`
-    );
+    return this.http.get<Etudiant[]>('http://localhost:8090/etudiants');
   }
 
   recupererEtudiantParId(id:number):Observable<Paiement> {

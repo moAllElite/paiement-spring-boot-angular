@@ -22,7 +22,7 @@ import java.util.*;
 @AllArgsConstructor
 @Service
 @Slf4j
-public class EtudiantService implements IEtudiantService {
+public class EtudiantServiceImpl implements IEtudiantService {
     private final EtudiantRepository etudiantRepository;
     private final IEtudiantMapper   mapper;
     private final Random random = new Random();

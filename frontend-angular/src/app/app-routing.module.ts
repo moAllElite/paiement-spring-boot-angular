@@ -19,8 +19,8 @@ const routes: Routes = [
   },
   {
     path:'students',
-    //data:{roles:['ROLE_ADMIN'] },
-   // canActivate:[AuthGuard],
+    data:{roles:['ROLE_ADMIN','ADMIN'] },
+    canActivate:[AuthGuard],
     children:[
       {
         path:'load',component:StudentsComponent,
