@@ -15,18 +15,24 @@ import { HomeComponent } from './components/home/home.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { PaiementsComponent } from './components/paiements/paiements.component';
-import { CardStudentComponent } from './components/card-student/card-student.component';
-import { ListStudentComponent } from './components/list-student/list-student.component';
 import { MatCardModule} from "@angular/material/card";
 import {KeycloakService} from "keycloak-angular";
+import { StudentsComponent } from './components/students/students.component';
+import { LoadPayementsComponent } from './components/load-payements/load-payements.component';
+import { MatTableModule} from "@angular/material/table";
+import {provideHttpClient} from "@angular/common/http";
+import { MatPaginatorModule} from "@angular/material/paginator";
+import {MatSortModule} from "@angular/material/sort";
+import { MatInput} from "@angular/material/input";
+import {MatFormFieldModule} from "@angular/material/form-field";
 
 function initializeKeycloak(keycloak: KeycloakService) {
   return () =>
     keycloak.init({
       config: {
-        url: 'http://localhost:8080',
+        url: 'http://localhost:9050',
         realm: 'scolarite-realm',
-        clientId: 'Scolarite App',
+        clientId: 'scolarite-app',
       },
       initOptions: {
         onLoad: 'check-sso',
@@ -43,8 +49,8 @@ function initializeKeycloak(keycloak: KeycloakService) {
     ProfileComponent,
     DashboardComponent,
     PaiementsComponent,
-    CardStudentComponent,
-    ListStudentComponent
+    StudentsComponent,
+    LoadPayementsComponent,
   ],
   imports: [
     BrowserModule,
@@ -58,6 +64,11 @@ function initializeKeycloak(keycloak: KeycloakService) {
     MatSidenavModule,
     MatListModule,
     MatCardModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatInput,
+    MatFormFieldModule,
 
   ],
   providers: [
@@ -68,7 +79,8 @@ function initializeKeycloak(keycloak: KeycloakService) {
       multi: true,
       deps: [KeycloakService]
     },
-    KeycloakService
+    KeycloakService,
+    provideHttpClient(),
   ],
   bootstrap: [AppComponent]
 })

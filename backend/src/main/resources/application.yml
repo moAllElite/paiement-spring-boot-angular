@@ -15,5 +15,16 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/scolarite-realm
+          jwk-set-uri: http://localhost:8080/realms/scolarite-realm/protocol/openid-connect/certs
+
 server:
   port: 8090
+springdoc:
+  api-docs:
+    enabled: true
+    path:  '/api-docs'

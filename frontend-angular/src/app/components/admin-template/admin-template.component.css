@@ -1,4 +1,6 @@
 .spacer{
   flex:  auto;
-
+}
+.content{
+  min-height: 639px;
 }
