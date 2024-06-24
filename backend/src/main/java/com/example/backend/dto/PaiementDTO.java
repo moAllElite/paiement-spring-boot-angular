@@ -13,5 +13,5 @@ public record PaiementDTO(
          TypeDePaiement type,
          EtatDePaiement etat ,
          String recu,
-         String codeEtudiant
+         EtudiantDTO etudiant
 ) { }

@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
 
@@ -25,13 +26,23 @@ public class BackendApplication {
     @Bean
     public CommandLineRunner commandLineRunner(EtudiantRepository   etudiantRepository, PaiementRepository paiementRepository) {
         return args -> {
-          etudiantRepository.save(Etudiant.builder().id(null).code("193233").nomComplet("Mouhamed Niang").build());
-            etudiantRepository.save( Etudiant.builder().id(null).code("100233").nomComplet("Sy Niang").build());
-            etudiantRepository.save( Etudiant.builder().id(null).code("202233").nomComplet("Dial Niang").build());
-            etudiantRepository.save( Etudiant.builder().id(null).code("702233").nomComplet("diagne Niang").build());
-            etudiantRepository.save( Etudiant.builder().id(null).code("502233").nomComplet("tall Niang").build());
-            etudiantRepository.save( Etudiant.builder().id(null).code("152233").nomComplet("fall Niang").build());
-            etudiantRepository.save( Etudiant.builder().id(null).code("115233").nomComplet("fam Niang").build());
+          etudiantRepository.save(Etudiant.builder().id(null).code("193233")
+                  .nomComplet("Mouhamed Niang")
+                          .dateNaissance(LocalDate.now())
+                          .photo("img")
+                  .build());
+            etudiantRepository.save( Etudiant.builder().id(null).code("100233").dateNaissance(LocalDate.now())
+                    .photo("img").nomComplet("Sy Niang").build());
+            etudiantRepository.save( Etudiant.builder().id(null).code("202233").dateNaissance(LocalDate.now())
+                    .photo("img").nomComplet("Dial Niang").build());
+            etudiantRepository.save( Etudiant.builder().id(null).code("702233").dateNaissance(LocalDate.now())
+                    .photo("img").nomComplet("diagne Niang").build());
+            etudiantRepository.save( Etudiant.builder().id(null).code("502233").dateNaissance(LocalDate.now())
+                    .photo("img").nomComplet("tall Niang").build());
+            etudiantRepository.save( Etudiant.builder().id(null).code("152233").dateNaissance(LocalDate.now())
+                    .photo("img").nomComplet("fall Niang").build());
+            etudiantRepository.save( Etudiant.builder().id(null).code("115233").dateNaissance(LocalDate.now())
+                    .photo("img").nomComplet("fam Niang").build());
             TypeDePaiement[] typeDePaiements =  TypeDePaiement.values();
 
             etudiantRepository.findAll().forEach(

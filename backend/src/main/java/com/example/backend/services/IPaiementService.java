@@ -15,4 +15,5 @@ public interface IPaiementService extends AbstractService<PaiementDTO> {
     PaiementDTO  save(MultipartFile recu, LocalDate date,double montant, TypeDePaiement typeDePaiement, String codeEtudiant) throws IOException;
     byte[] getPaiementFileById(Long paiementId) throws IOException;
     PaiementDTO update(Long id, EtatDePaiement etatDePaiement);
+
 }

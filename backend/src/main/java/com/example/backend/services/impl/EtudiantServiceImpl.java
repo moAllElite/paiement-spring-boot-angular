@@ -18,13 +18,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
 @Slf4j
 public class EtudiantServiceImpl implements IEtudiantService {
     private final EtudiantRepository etudiantRepository;
-    private final IEtudiantMapper   mapper;
+    private final IEtudiantMapper etudiantMapper;
     private final Random random = new Random();
     private static final String MESSAGENOTFOUND= "Etudiant not found";
     private static final String SOUS_DOSSIER ="images";
@@ -66,13 +67,13 @@ public class EtudiantServiceImpl implements IEtudiantService {
 
         Etudiant newEtudiant = etudiantRepository.save(etudiant);
         log.info(imagePath.toUri().toString());
-        return mapper.toDto(newEtudiant);
+        return etudiantMapper.toDto(newEtudiant);
     }
 
     @Override
     public EtudiantDTO findById(Long id) {
         Optional<Etudiant> existStudent = etudiantRepository.findById(id);
-        return mapper.toDto(
+        return etudiantMapper.toDto(
                 existStudent.orElseThrow(
                         ()-> new EntityNotFoundException(
                                 (MESSAGENOTFOUND)
@@ -83,9 +84,10 @@ public class EtudiantServiceImpl implements IEtudiantService {
 
     @Override
     public List<EtudiantDTO> findAll() {
-        return etudiantRepository.findAll().stream()
-                .map(mapper::toDto)
-                .toList();
+        return etudiantRepository.findAll()
+                .stream()
+                .map(etudiantMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -110,7 +112,7 @@ public class EtudiantServiceImpl implements IEtudiantService {
                 .nomComplet(etudiantActionsDTO.getNomComplet())
                 .dateNaissance(etudiantActionsDTO.getDateNaissance())
                 .build();
-        Etudiant savedEtudiant = mapper.toEntity(etudiantDTO);
+        Etudiant savedEtudiant = etudiantMapper.toEntity(etudiantDTO);
 
 
         String imageId = UUID.randomUUID().toString();
@@ -131,7 +133,7 @@ public class EtudiantServiceImpl implements IEtudiantService {
                 "photo" + imageId + extension);
         savedEtudiant.setPhoto("");
 
-            return mapper.toDto(
+            return etudiantMapper.toDto(
                 etudiantRepository.save(savedEtudiant)
         );
     }
@@ -139,7 +141,7 @@ public class EtudiantServiceImpl implements IEtudiantService {
     @Override
     public EtudiantDTO findByCode(String code) {
         Optional<Etudiant> existStudent = etudiantRepository.findByCode(code);
-        return mapper.toDto(
+        return etudiantMapper.toDto(
                 existStudent.orElseThrow(
                         ()-> new EntityNotFoundException(
                                 (MESSAGENOTFOUND)

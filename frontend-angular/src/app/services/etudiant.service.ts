@@ -2,17 +2,18 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {Etudiant} from "../models/etudiant.model";
-import {EtatDePaiement, Paiement} from "../models/paiement.interface";
+import {EtatDePaiement, Paiement} from "../models/paiement.model";
+import {EtudiantRoot} from "../models/etudiant-root.model";
 
 @Injectable({
   providedIn: 'root'
 })
 export class EtudiantService {
   Host:string='http://localhost:8090'
-  constructor(protected   http: HttpClient) {}
+  constructor(public  http: HttpClient) {}
 
-  recupererListeEtudiants() :Observable<Etudiant[]> {
-    return this.http.get<Etudiant[]>('http://localhost:8090/etudiants');
+  recupererListeEtudiants() :Observable<EtudiantRoot> {
+    return this.http.get<EtudiantRoot>('http://localhost:8090/etudiants');
   }
 
   recupererEtudiantParId(id:number):Observable<Paiement> {

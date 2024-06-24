@@ -19,6 +19,8 @@ export class AdminTemplateComponent implements  OnInit{
         value => {
           this.profile = value;
           this.username.emit(value.username);
+          console.log(value.firstName + " " + value.lastName);
+          console.log(value.email);
         }
       );
       console.log("is authenticated")
@@ -29,7 +31,7 @@ export class AdminTemplateComponent implements  OnInit{
   }
 
   onLogin():void{
-    this.keycloakService.login();
+    this.keycloakService.login().then();
   }
   onLogout():void{
     this.keycloakService.logout(window.location.origin).then();

@@ -1,9 +1,13 @@
+import {Etudiant} from "./etudiant.model";
+
 export interface Paiement {
-  date:Date ,
-  montant: number,
-  type: TypeDePaiement,
-  etat:EtatDePaiement,
+  id: number
+  date: string
+  montant: number
+  type: string
+  etat: any
   recu: string
+  etudiant: Etudiant
 }
 export enum TypeDePaiement{
   CASH="CASH",

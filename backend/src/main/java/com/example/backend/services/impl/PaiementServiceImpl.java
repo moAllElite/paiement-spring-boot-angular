@@ -2,9 +2,11 @@ package com.example.backend.services.impl;
 
 import com.example.backend.dto.PaiementDTO;
 import com.example.backend.entities.EtatDePaiement;
+import com.example.backend.entities.Etudiant;
 import com.example.backend.entities.Paiement;
 import com.example.backend.entities.TypeDePaiement;
 import com.example.backend.mappers.IPaiementMapper;
+import com.example.backend.repo.EtudiantRepository;
 import com.example.backend.repo.PaiementRepository;
 import com.example.backend.services.IPaiementService;
 import jakarta.persistence.EntityNotFoundException;
@@ -28,6 +30,7 @@ public class PaiementServiceImpl implements IPaiementService {
     private static final String REPERTOIRE_PARENT="dossier-etudiant-reçus";
     private static final String NOTFOUNDMESSAGE="Aucun paiement n'a été trouvé avec l'id %s";
     private final PaiementRepository paiementRepository;
+    private final EtudiantRepository etudiantRepository;
     private final IPaiementMapper paiementMapper;
 
     @Override
@@ -77,16 +80,18 @@ public class PaiementServiceImpl implements IPaiementService {
                 SOUS_DOSSIER +fileId+extension
         );
         Files.copy(recu.getInputStream(),filePath);
-        PaiementDTO nouveauPaiementDTO= PaiementDTO.builder()
-                .codeEtudiant(codeEtudiant)
+
+        Etudiant etudiant = etudiantRepository.findByCode(codeEtudiant)
+                .orElseThrow(EntityNotFoundException::new);
+
+        Paiement paiement= Paiement.builder()
+                .etudiant(etudiant)
                 .type(typeDePaiement)
                 .montant(montant)
                 .date(date)
                 .etat(EtatDePaiement.CREE)
                 .recu(filePath.toUri().toString())
                 .build();
-
-        Paiement paiement = paiementMapper.toEntity(nouveauPaiementDTO);
 
         return  paiementMapper.toDto(paiementRepository.save(paiement));
     }
@@ -122,7 +127,8 @@ public class PaiementServiceImpl implements IPaiementService {
     @Override
     public List<PaiementDTO> findAll() {
         return paiementRepository.findAll()
-                .stream().map(paiementMapper::toDto)
+                .stream()
+                .map(paiementMapper::toDto)
                 .toList();
     }
 
@@ -137,5 +143,6 @@ public class PaiementServiceImpl implements IPaiementService {
                 paiementRepository.save(paiement)
         );
     }
+
 
 }

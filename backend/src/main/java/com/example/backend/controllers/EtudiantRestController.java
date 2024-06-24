@@ -21,7 +21,7 @@ import java.util.List;
 @Slf4j
 @AllArgsConstructor
 @RestController
-@RequestMapping("etudiants")
+@RequestMapping("/etudiants")
 public class EtudiantRestController {
     private final IEtudiantService  etudiantService;
     private final IPaiementService paiementService;
@@ -35,18 +35,18 @@ public class EtudiantRestController {
             LocalDate dateNaissance
     ) throws IOException {
         log.info(image.getContentType());
-
         return ResponseEntity.ok(  etudiantService.save(image,  nomComplet,dateNaissance) );
     }
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     @PostMapping(path = "/paiements", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<PaiementDTO> nouveauPaiement(@RequestParam MultipartFile recu, LocalDate date, double montant, TypeDePaiement typeDePaiement, String codeEtudiant) throws IOException {
+    public ResponseEntity<PaiementDTO> newPayement(@RequestParam MultipartFile recu, LocalDate date, double montant, TypeDePaiement typeDePaiement, String codeEtudiant) throws IOException {
         return ResponseEntity.ok(paiementService.save(recu,  date, montant, typeDePaiement, codeEtudiant));
     }
 
-  //  @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
-    @GetMapping
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @GetMapping("/")
     public ResponseEntity<List<EtudiantDTO>> getAll(){
+     //   log.info(etudiantService.findAll().toString());
         return ResponseEntity.ok(etudiantService.findAll());
     }
 
@@ -69,13 +69,11 @@ public class EtudiantRestController {
          return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("{code}/paiements/")
-    public ResponseEntity<List<PaiementDTO>> getPaiementByCodeEtudiant(@PathVariable String code){
+    @GetMapping("/{code}/paiements")
+    public ResponseEntity<List<PaiementDTO>> getPaiementByStudentCode(@PathVariable String code){
         return ResponseEntity.ok(paiementService.getAllPaiementByStudentCode(code));
     }
 
-    @GetMapping(value = "/{code}/photo",produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> getPhoto(@PathVariable String code){
-        return null;
-    }
+
+
 }

@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {EtatDePaiement, Paiement} from "../models/paiement.interface";
+import {EtatDePaiement, Paiement} from "../models/paiement.model";
+import {DetailPaiement} from "../models/detail-paiement.model";
 
 @Injectable({
   providedIn: 'root'
@@ -9,12 +10,12 @@ import {EtatDePaiement, Paiement} from "../models/paiement.interface";
 export class PaiementService {
 
   Host:string='http://localhost:8090'
-  constructor(private readonly  http: HttpClient) {}
+  constructor(public   http: HttpClient) {}
 
 
-  recupererPaiementParCodeEtudiant(code:string):Observable<Paiement> {
-    return this.http.get<Paiement>(
-      `${this.Host}etudiants/${code}/paiements`
+  recupererPaiementParCodeEtudiant(code:string):Observable<DetailPaiement> {
+    return this.http.get<DetailPaiement>(
+      `http://localhost:8090/etudiants/${code}/paiements`
     );
   }
 
@@ -25,7 +26,7 @@ export class PaiementService {
 
   modifierEtatDePaiementParId(id:number):Observable<Paiement> {
     return this.http.get<Paiement>(
-      `${this.Host}/paiements/updateStatus//${id}`
+      `${this.Host}/paiements/updateStatus/${id}`
     );
   }
 

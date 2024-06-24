@@ -41,6 +41,6 @@ public class JwtAuthenConverter implements Converter<Jwt, AbstractAuthentication
         }
         realmAccess = jwt.getClaim("realm_access");
         roles = (Collection<String>) realmAccess.get("roles");
-        return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
+        return roles.stream().map(role->new SimpleGrantedAuthority("ROLE_"+ role.replace("-","_"))).collect(Collectors.toSet());
     }
 }

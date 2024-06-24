@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, signal, ViewChild, WritableSignal} from '@angular/core';
 import {EtudiantService} from "../../services/etudiant.service";
 import {map, Observable} from "rxjs";
 import {Etudiant} from "../../models/etudiant.model";
@@ -7,6 +7,7 @@ import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator, MatPaginatorModule} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {Router} from "@angular/router";
+import {EtudiantRoot} from "../../models/etudiant-root.model";
 
 @Component({
   selector: 'app-load-students',
@@ -14,50 +15,47 @@ import {Router} from "@angular/router";
   styleUrl: './students.component.css'
 })
 export class StudentsComponent implements OnInit, AfterViewInit{
-  etudiants$!:Observable<Etudiant[]>;
-  etudiants:Etudiant[]= [];
-  public dataSource:any;
-  displayedColumns:string[]= ['id','code',
+  public etudiants$!:Observable<Etudiant[]>;
+  public etudiants:WritableSignal<Etudiant[]>=signal([]);
+  public dataSource!:MatTableDataSource<Etudiant>;
+  public displayedColumns:string[]= ['code',
     'nomComplet', 'photo',
     'dateNaissance','payements'
   ];
   value !:string;
+
   @ViewChild(MatPaginator) paginator!:MatPaginator;
 
   @ViewChild(MatSort)sort!:MatSort;
 
   constructor(private etudiantService:EtudiantService,
-              private  router:Router) {
-  }
+              private  router:Router) {}
 
+  /**
+   *  au chargement la page on affiche la liste des étudiants
+   */
 
   ngOnInit(): void {
-   // this.etudiants=[];
-    this.etudiants$= this.etudiantService.recupererListeEtudiants()
-    this.etudiants$.subscribe(
-      (val)=> {
-        console.log(val)
+    this.etudiantService.recupererListeEtudiants().subscribe(
+      {
+        next :  (value1) => {
+          this.etudiants.set(value1._embedded.etudiants);
+          this.dataSource = new MatTableDataSource(this.etudiants());
+        }
       }
     );
-
-
-    /* for (let  i = 1 ; i < 100; i++ ){
-       this.etudiants.push(
-         {
-           id: i,
-           code: Math.random().toString(20),
-           nomComplet: Math.random().toString(20),
-           photo:"img.jpg",
-           dateNaissance:new  Date()
-         });
-     }*/
-
-    this.dataSource = new MatTableDataSource(this.etudiants);
   }
 
   ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.etudiantService.recupererListeEtudiants().subscribe(
+      {
+        next :  (value1) => {
+          this.etudiants.set(value1._embedded.etudiants);
+          this.dataSource = new MatTableDataSource(this.etudiants());
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+        }
+      });
   }
 
   /**
@@ -69,15 +67,13 @@ export class StudentsComponent implements OnInit, AfterViewInit{
     this.dataSource.filter = this.value;
   }
 
-  protected readonly event = event;
-  protected readonly HTMLInputElement = HTMLInputElement;
 
   /**
    * navigation vers les paiements d'un étudiants
    * @param etudiant
    */
   getPayements(etudiant: Etudiant) {
-    this.router.navigateByUrl(`/paiements/:${etudiant.id}`);
+    this.router.navigateByUrl(`/payments/etudiant/code/${etudiant.code}`).then();
 
   }
 }

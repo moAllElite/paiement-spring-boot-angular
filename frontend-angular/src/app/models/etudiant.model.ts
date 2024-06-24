@@ -1,7 +1,7 @@
-export interface Etudiant{
-  id: number
+export interface Etudiant {
   code: string
   nomComplet: string
-  dateNaissance: Date
+  dateNaissance: string
   photo: string
 }
+

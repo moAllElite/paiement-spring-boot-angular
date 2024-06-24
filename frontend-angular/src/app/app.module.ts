@@ -18,14 +18,17 @@ import { PaiementsComponent } from './components/paiements/paiements.component';
 import { MatCardModule} from "@angular/material/card";
 import {KeycloakService} from "keycloak-angular";
 import { StudentsComponent } from './components/students/students.component';
-import { LoadPayementsComponent } from './components/load-payements/load-payements.component';
 import { MatTableModule} from "@angular/material/table";
 import {provideHttpClient, withFetch} from "@angular/common/http";
 import { MatPaginatorModule} from "@angular/material/paginator";
 import {MatSortModule} from "@angular/material/sort";
 import { MatInput} from "@angular/material/input";
 import {MatFormFieldModule} from "@angular/material/form-field";
-
+import {ReactiveFormsModule} from "@angular/forms";
+import {provideRouter, RouterModule, withComponentInputBinding, withViewTransitions} from "@angular/router";
+import {routes} from './app-routing.module';
+import { PayementsDetailsComponent } from './components/payements-details/payements-details.component';
+import {MatChip, MatChipOption} from "@angular/material/chips";
 function initializeKeycloak(keycloak: KeycloakService) {
   return () =>
     keycloak.init({
@@ -51,7 +54,7 @@ function initializeKeycloak(keycloak: KeycloakService) {
     DashboardComponent,
     PaiementsComponent,
     StudentsComponent,
-    LoadPayementsComponent,
+    PayementsDetailsComponent,
   ],
   imports: [
     BrowserModule,
@@ -70,9 +73,16 @@ function initializeKeycloak(keycloak: KeycloakService) {
     MatSortModule,
     MatInput,
     MatFormFieldModule,
-
+    ReactiveFormsModule,
+    MatChip,
+    MatChipOption,
   ],
   providers: [
+    provideRouter(
+      routes,
+      withViewTransitions(),
+      withComponentInputBinding(),
+    ),
     provideAnimationsAsync(),
     provideHttpClient(
       withFetch(),
@@ -86,6 +96,6 @@ function initializeKeycloak(keycloak: KeycloakService) {
     KeycloakService,
 
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent,]
 })
 export class AppModule { }
